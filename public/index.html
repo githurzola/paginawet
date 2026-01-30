@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Web-Eria</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- PALETA ÉPICA --- */
+        :root {
+            --bg-color: #2e1065;
+            --primary: #FFD700;
+            --secondary: #00ffff;
+            --text-main: #ffffff;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            background-image: radial-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- ESTILOS DEL SEPARADOR ÉPICO --- */
+        .epic-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 40px 20px;
+            opacity: 0;
+            animation: fadeInSeparator 2s forwards;
+            animation-delay: 0.5s;
+        }
+
+        .separator-line {
+            flex-grow: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 15px var(--primary);
+            border-radius: 50%;
+        }
+
+        .separator-gem {
+            width: 15px;
+            height: 15px;
+            margin: 0 25px;
+            border: 2px solid var(--secondary);
+            background-color: var(--bg-color);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px var(--secondary), inset 0 0 5px var(--secondary);
+            animation: pulseGem 3s infinite;
+        }
+
+        /* --- SECCIÓN MOMENTOS ÉPICOS --- */
+        #galeria-random {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInSeparator 2s forwards;
+            animation-delay: 0.8s;
+        }
+
+        .gallery-title {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .gallery-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .gallery-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .random-photo {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            filter: grayscale(30%);
+        }
+
+        /* FILA 1 */
+        .row-1 .random-photo:nth-child(1) {
+            transform: rotate(3deg);
+        }
+
+        .row-1 .random-photo:nth-child(2) {
+            width: auto;
+            height: 320px;
+            aspect-ratio: 9/16;
+            transform: rotate(-2deg) scale(1.05);
+            z-index: 2;
+            object-fit: cover;
+        }
+
+        .row-1 .random-photo:nth-child(3) {
+            transform: rotate(5deg) scaleX(-1);
+        }
+
+        /* FILA 2 */
+        .row-2 .random-photo:nth-child(1) {
+            transform: rotate(-4deg);
+        }
+
+        .row-2 .random-photo:nth-child(2) {
+            transform: rotate(4deg);
+            margin-top: 20px;
+        }
+
+        .random-photo:hover {
+            transform: scale(1.15) rotate(0deg) !important;
+            z-index: 100;
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary);
+            filter: grayscale(0%);
+            margin-top: 0 !important;
+        }
+
+        .row-1 .random-photo:nth-child(3):hover {
+            transform: scale(1.15) rotate(0deg) scaleX(-1) !important;
+        }
+
+        /* --- TÍTULO REPERTORIO --- */
+        .section-title-repertorio {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            margin: 0 0 10px 0;
+            width: 100%;
+            opacity: 0;
+            animation: fadeInSeparator 2s forwards;
+            animation-delay: 1.2s;
+        }
+
+        /* --- HERO SECTION --- */
+        #hero-entrada {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: radial-gradient(circle at center, rgba(46, 16, 101, 0.9) 0%, rgba(46, 16, 101, 1) 100%);
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            margin: 0;
+            animation: pulseHero 3s infinite;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-top: 20px;
+            letter-spacing: 5px;
+            opacity: 0.8;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            font-size: 2rem;
+            color: var(--text-main);
+            animation: bounce 2s infinite;
+            opacity: 0.7;
+        }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px 20px;
+            gap: 50px;
+            min-height: 100vh;
+        }
+
+        .sidebar-sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 20px;
+            width: 350px;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-scroll {
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        /* --- ESTILOS COMPONENTES --- */
+        h1.panel-title {
+            margin: 20px 0 10px 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        #contenedor-foto {
+            position: relative;
+            margin: 20px 0;
+            transition: transform 0.3s ease-out;
+        }
+
+        #contenedor-foto:hover {
+            transform: scale(1.03);
+            cursor: pointer;
+        }
+
+        img.main-photo {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 12px;
+            border: 5px solid var(--primary);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+            display: block;
+        }
+
+        .input-area {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(5px);
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .input-area {
+                flex-direction: row;
+            }
+        }
+
+        input {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            padding: 7px 7px;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary);
+            background: transparent;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: none;
+            font-size: 0.8rem;
+        }
+
+        button.send-btn {
+            background: var(--primary);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 2px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        button.send-btn:hover {
+            background: white;
+            box-shadow: 0 0 25px white;
+        }
+
+        button.send-btn:active {
+            transform: scale(0.95);
+        }
+
+        #lista-apodos {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+
+        .sticker {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            animation: riseUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .st-pink {
+            border-bottom: 4px solid #ff00ff;
+        }
+
+        .st-blue {
+            border-bottom: 4px solid #00ffff;
+        }
+
+        .st-yellow {
+            border-bottom: 4px solid #FFD700;
+        }
+
+        .st-green {
+            border-bottom: 4px solid #00ff00;
+        }
+
+        .counter-badge {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--secondary);
+            padding-bottom: 5px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInSeparator 2s forwards;
+            animation-delay: 1.3s;
+        }
+
+        /* --- VIDEO OVERLAY (ARREGLADO) --- */
+        #overlay-video {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            /* Más oscuro para que resalte el texto */
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #overlay-video h1 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            /* Separación con el video */
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 1);
+            /* Sombra negra para que se lea siempre */
+            z-index: 2001;
+            /* Asegura que esté por encima */
+            animation: pulse 1s infinite;
+        }
+
+        /* --- VIDEO LIMITADO --- */
+        video {
+            width: auto;
+            /* El ancho se ajusta solo */
+            height: auto;
+            max-width: 90%;
+            max-height: 50vh;
+            /* IMPORTANTE: Nunca será más alto que la mitad de la pantalla */
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            cursor: default;
+        }
+
+        @keyframes riseUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseHero {
+            0% {
+                text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+
+            50% {
+                text-shadow: 0 0 60px rgba(255, 215, 0, 1);
+                transform: scale(1.05);
+            }
+
+            100% {
+                text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulseGem {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px var(--secondary), inset 0 0 5px var(--secondary);
+            }
+
+            50% {
+                box-shadow: 0 0 25px var(--secondary), inset 0 0 10px var(--secondary);
+            }
+        }
+
+        @keyframes fadeInSeparator {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .section-title-repertorio {
+                font-size: 2rem;
+            }
+
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar-sticky {
+                position: relative;
+                top: 0;
+                width: 100%;
+                margin-bottom: 40px;
+            }
+
+            #lista-apodos {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section id="hero-entrada">
+        <h1 class="hero-title">LA WEB-ERIA</h1>
+        <div class="hero-subtitle">Descubre mas acerca de Samuelito 🥵🔥</div>
+        <div class="scroll-indicator">⬇ DESLIZA ⬇</div>
+    </section>
+
+    <div class="epic-separator">
+        <div class="separator-line"></div>
+        <div class="separator-gem"></div>
+        <div class="separator-line"></div>
+    </div>
+
+    <section id="galeria-random">
+        <h2 class="gallery-title">El Cuarto</h2>
+
+        <div class="gallery-wrapper">
+            <div class="gallery-row row-1">
+                <img src="https://tenor.com/view/yummy-tongue-flight-flight-reacts-excited-gif-17057509.gif"
+                    class="random-photo" alt="GIF Izquierda">
+                <img src="foto2.jpg" class="random-photo" alt="Foto Centro Vertical">
+                <img src="https://tenor.com/view/yummy-tongue-flight-flight-reacts-excited-gif-17057509.gif"
+                    class="random-photo" alt="GIF Derecha">
+            </div>
+
+            <div class="gallery-row row-2">
+                <img src="foto3.jpg" class="random-photo" alt="Foto 3">
+                <img src="foto4.jpg" class="random-photo" alt="Foto 4">
+            </div>
+        </div>
+    </section>
+
+    <div class="epic-separator">
+        <div class="separator-line"></div>
+        <div class="separator-gem"></div>
+        <div class="separator-line"></div>
+    </div>
+
+    <div class="main-container">
+
+        <aside class="sidebar-sticky">
+            <div id="contenedor-foto">
+                <img src="foto.jpg" alt="La Leyenda" class="main-photo">
+            </div>
+
+            <h1 class="panel-title">"POLNITO LICO"</h1>
+
+            <div class="input-area">
+                <input type="text" id="input-apodo" placeholder="Escribe el título..." autocomplete="off"
+                    maxlength="25">
+                <button onclick="enviarApodo()" class="send-btn">SUBIR</button>
+            </div>
+        </aside>
+
+        <main class="content-scroll">
+            <h2 class="section-title-repertorio">EL REPERTORIO</h2>
+
+            <div class="counter-badge">Nombres del Cabas: <span id="contador">0</span></div>
+
+            <ul id="lista-apodos">
+            </ul>
+        </main>
+    </div>
+
+    <div id="overlay-video">
+        <h1 id="mensaje-celebracion">¡HITO ALCANZADO!</h1>
+        <video id="miVideo" src="video.mp4"></video>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const lista = document.getElementById('lista-apodos');
+        const input = document.getElementById('input-apodo');
+        const contador = document.getElementById('contador');
+        const overlay = document.getElementById('overlay-video');
+        const video = document.getElementById('miVideo');
+        const mensaje = document.getElementById('mensaje-celebracion');
+        let total = 0;
+
+        const placeholders = ["Ponme un Name"];
+        input.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+
+        const clasesColores = ['st-pink', 'st-blue', 'st-yellow', 'st-green'];
+
+        function enviarApodo() {
+            const texto = input.value;
+            if (texto.trim()) {
+                socket.emit('enviar_apodo', texto);
+                input.value = ''; input.focus();
+                input.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+            }
+        }
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarApodo(); });
+
+        socket.on('cargar_apodos', (apodos) => {
+            lista.innerHTML = '';
+            [...apodos].reverse().forEach(agregarApodoALista);
+            actualizarContador(apodos.length);
+        });
+
+        socket.on('nuevo_apodo', (apodo) => {
+            agregarApodoALista(apodo);
+            total++;
+            contador.innerText = total;
+            mostrarCelebracion(total);
+        });
+
+        socket.on('lanzar_video', (data) => {
+            mostrarCelebracion(data.cantidad);
+        });
+
+        function agregarApodoALista(apodo) {
+            const li = document.createElement('li');
+            li.textContent = apodo; li.classList.add('sticker');
+            li.classList.add(clasesColores[Math.floor(Math.random() * clasesColores.length)]);
+            lista.prepend(li);
+        }
+        function actualizarContador(num) { total = num; contador.innerText = total; }
+
+        function mostrarCelebracion(cantidad) {
+            mensaje.innerText = `¡APODO NUEVO! 🚨🚨🚨🚨🚨🚨🗣️`;
+            overlay.style.display = 'flex';
+            video.currentTime = 0;
+            video.play();
+            video.onended = () => { overlay.style.display = 'none'; };
+        }
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+    </script>
+</body>
+
+</html>
