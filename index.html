@@ -525,27 +525,41 @@
 
         @media (max-width: 850px) {
             .hero-title {
-                font-size: 3rem;
+                font-size: 2.5rem;
+                /* Título más pequeño en móvil */
+                padding: 0 10px;
             }
 
             .section-title-repertorio {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
 
             .main-container {
                 flex-direction: column;
                 align-items: center;
+                padding: 0 10px 40px 10px;
+                /* Menos padding lateral */
             }
 
             .sidebar-sticky {
                 position: relative;
                 top: 0;
                 width: 100%;
+                max-width: 400px;
+                /* Limitar ancho en móvil */
                 margin-bottom: 40px;
+                order: -1;
+                /* Sidebar siempre arriba en móvil */
             }
 
             #lista-apodos {
                 justify-content: center;
+            }
+
+            #contenedor-foto {
+                max-width: 200px;
+                /* Foto más pequeña en móvil */
+                margin: 0 auto;
             }
         }
     </style>
@@ -618,7 +632,7 @@
 
     <div id="overlay-video">
         <h1 id="mensaje-celebracion">¡HITO ALCANZADO!</h1>
-        <video id="miVideo" src="video.mp4"></video>
+        <video id="miVideo" src="video.mp4" playsinline></video>
     </div>
 
     <!-- FIREBASE SDK (Módulos) -->
@@ -730,7 +744,22 @@
             mensaje.innerText = `¡APODO NUEVO! 🚨🚨🚨🚨🚨🚨🗣️`;
             overlay.style.display = 'flex';
             video.currentTime = 0;
-            video.play();
+
+            // Intento de reproducción segura (para móviles)
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Autoplay started!
+                    video.muted = false; // Intentamos activar sonido si deja
+                })
+                    .catch(error => {
+                        // Si falla (bloqueo de autoplay), probamos en silencio
+                        console.log("Autoplay con sonido bloqueado. Intentando Muted.");
+                        video.muted = true;
+                        video.play();
+                    });
+            }
+
             // Asegurar que el video se oculte al terminar
             video.onended = () => { overlay.style.display = 'none'; };
         }
