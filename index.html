@@ -621,9 +621,32 @@
         <video id="miVideo" src="video.mp4"></video>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+    <!-- FIREBASE SDK (Módulos) -->
+    <script type="module">
+        // Importar las funciones necesarias de Firebase v9+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // --- CONFIGURACIÓN DE FIREBASE ---
+        // ¡OJO! Aquí pondrás tus datos cuando crees el proyecto en Firebase.
+        // Te dejaré un comentario de dónde sacarlos.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNPbnYrOwSFKp8-amIpxkQ8pHYUAxwdpc",
+            authDomain: "web-eria.firebaseapp.com",
+            projectId: "web-eria",
+            storageBucket: "web-eria.firebasestorage.app",
+            messagingSenderId: "181225454903",
+            appId: "1:181225454903:web:da7a8bd06ae98496d0eeb2",
+            // Esta URL es necesaria para la base de datos (la construí con tu ID)
+            databaseURL: "https://web-eria-default-rtdb.firebaseio.com"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const apodosRef = ref(db, 'apodos'); // Referencia a la lista 'apodos' en la DB
+
+        // --- LÓGICA DE LA UI (Igual que antes pero adaptada) ---
         const lista = document.getElementById('lista-apodos');
         const input = document.getElementById('input-apodo');
         const contador = document.getElementById('contador');
@@ -631,37 +654,68 @@
         const video = document.getElementById('miVideo');
         const mensaje = document.getElementById('mensaje-celebracion');
         let total = 0;
+        const META_VIDEO = 3; // Cada cuántos sale el video
 
         const placeholders = ["Ponme un Name"];
         input.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
 
         const clasesColores = ['st-pink', 'st-blue', 'st-yellow', 'st-green'];
 
-        function enviarApodo() {
+        // HACER LA FUNCIÓN DISPONIBLE GLOBALMENTE (porque el botón usa onclick html)
+        window.enviarApodo = function () {
             const texto = input.value;
             if (texto.trim()) {
-                socket.emit('enviar_apodo', texto);
+                // EN LUGAR DE socket.emit, USAMOS push DE FIREBASE
+                push(apodosRef, {
+                    texto: texto,
+                    fecha: Date.now()
+                });
+
                 input.value = ''; input.focus();
                 input.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
             }
         }
-        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarApodo(); });
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.enviarApodo(); });
 
-        socket.on('cargar_apodos', (apodos) => {
+        // --- ESCUCHAR CAMBIOS EN TIEMPO REAL ---
+        // onValue se dispara cada vez que la base de datos cambia
+        onValue(apodosRef, (snapshot) => {
             lista.innerHTML = '';
-            [...apodos].reverse().forEach(agregarApodoALista);
-            actualizarContador(apodos.length);
-        });
+            const data = snapshot.val();
 
-        socket.on('nuevo_apodo', (apodo) => {
-            agregarApodoALista(apodo);
-            total++;
-            contador.innerText = total;
-            mostrarCelebracion(total);
-        });
+            if (data) {
+                // Firebase devuelve un objeto de objetos, lo convertimos a array
+                const listaApodos = Object.values(data);
 
-        socket.on('lanzar_video', (data) => {
-            mostrarCelebracion(data.cantidad);
+                // Actualizamos contador
+                const nuevoTotal = listaApodos.length;
+
+                // Si ha aumentado el número, verificamos si toca video
+                if (nuevoTotal > total && total !== 0) { // Evitamos video al cargar la página por primera vez
+                    // Verificamos si es nuevo (simple check, idealmente compararíamos IDs)
+                    mostrarCelebracion(nuevoTotal);
+                }
+
+                // Si es múltiplo de la meta y acabamos de agregar (lógica simplificada para frontend)
+                if (nuevoTotal > 0 && nuevoTotal % META_VIDEO === 0 && nuevoTotal > total && total !== 0) {
+                    // Ya se maneja en 'mostrarCelebracion' genérico por cada apodo, 
+                    // pero si quieres video ESPECIAL solo en múltiplos:
+                    // alert("¡META ALCANZADA!"); 
+                }
+
+                total = nuevoTotal;
+                actualizarContador(total);
+
+                // Renderizar lista (invertida para ver los nuevos arriba)
+                listaApodos.reverse().forEach(item => {
+                    // Soporte para datos viejos que eran solo string, o nuevos objetos
+                    const texto = item.texto || item;
+                    agregarApodoALista(texto);
+                });
+            } else {
+                total = 0;
+                actualizarContador(0);
+            }
         });
 
         function agregarApodoALista(apodo) {
@@ -670,16 +724,18 @@
             li.classList.add(clasesColores[Math.floor(Math.random() * clasesColores.length)]);
             lista.prepend(li);
         }
-        function actualizarContador(num) { total = num; contador.innerText = total; }
+        function actualizarContador(num) { contador.innerText = num; }
 
         function mostrarCelebracion(cantidad) {
             mensaje.innerText = `¡APODO NUEVO! 🚨🚨🚨🚨🚨🚨🗣️`;
             overlay.style.display = 'flex';
             video.currentTime = 0;
             video.play();
+            // Asegurar que el video se oculte al terminar
             video.onended = () => { overlay.style.display = 'none'; };
         }
 
+        // Cierre del overlay al hacer click
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
                 overlay.style.display = 'none';
